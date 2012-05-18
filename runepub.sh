@@ -106,7 +106,7 @@ num=0;
 # TODO: Handle things that aren't collections
 
 egrep -v '(^#|^-)' Articles.lst | while read l; do
-  htmlfile=`echo $l | sed -e 's/|.*//'`
+  htmlfile=`echo $l | sed -e 's/|.*//'`.html
   chaptername=`echo $l | sed -e 's/.*|\([^|]*\)|.*/\1/' | recode $charset..utf8`
   pages=`echo $l | sed -e 's/.*|//'`
   echo $htmlfile $chaptername $pages
@@ -132,7 +132,7 @@ egrep -v '(^#|^-)' Articles.lst | while read l; do
 	  done
       done
       echo '</p>' >> "$htmlfile"
-      
+    fi      
 
     num=$((num+1))
       tidy -n -asxhtml -utf8 "$htmlfile"  >"$htmlfile.tmp" || true
@@ -161,7 +161,6 @@ EOF
     echo "<itemref idref=\"chapter$num\" /> " >> work/itemrefs
 
 
-    fi
 done
 
 # Close index

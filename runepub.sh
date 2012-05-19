@@ -6,9 +6,9 @@ work="$1"
 
 runebergid="http://runeberg.org/$work/"
 
-rm -rf /tmp/runepub/ws*
-mkdir -p /tmp/runepub/ws$$/work/META-INF
-cd /tmp/runepub/ws$$
+rm -rf runepub-ws*
+mkdir -p runepub-ws$$/work/META-INF
+pushd runepub-ws$$
 wget -O "$work.zip" "http://runeberg.org/download.pl?mode=txtzip&work=$work"
 unzip "$work".zip
 
@@ -189,6 +189,9 @@ EOF
 
 cd work
 
-rm -f ../$work.epub
-zip -X -9 ../$work.epub mimetype
-zip -X -9 -u -r ../$work.epub *
+rm -f ../../$work.epub
+zip -X -9 ../../$work.epub mimetype
+zip -X -9 -u -r ../../$work.epub *
+
+popd
+rm -rf runepub-ws$$

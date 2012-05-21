@@ -136,9 +136,10 @@ EOF
 
 
 
+    echo '<itemref idref="title" /> <itemref idref="edition" />' > work/itemrefs
 
 
-num=0;
+num=1;
 
 # TODO: Handle things that aren't collections
 
@@ -158,7 +159,7 @@ egrep -v '(^#|^-)' Articles.lst | while read l; do
       echo "<h2>$chaptername</h2><p>" >>"$htmlfile"
       for p in $pages; do
 	  # Expand ranges, if needed. Assumes increasing ranges. Assume fixed number of digits in filenames for now.
-          curpages=`seq -f %0$filenameleng "${p%-*}" "${p#*-}"`
+          curpages=`seq -f %0${filenamelen}g "${p%-*}" "${p#*-}"`
 
 	  for q in $curpages; do
 	      # TODO: Actually detect if we have headers/footers to remove instead of assuming so.
@@ -224,6 +225,14 @@ $itemrefs
 </package>
 EOF
 
+
+# Source any special configuration
+if [ -r "../special/$work.sh" ]; then
+  . "../special/$work.sh"
+fi
+
+
+# Now, build the actual epub
 cd work
 
 rm -f "../../$work.epub"
@@ -231,8 +240,8 @@ zip -X -9 "../../$work.epub" mimetype
 zip -X -9 -u -r "../../$work.epub" *
 
 popd
-rm -rf runepub-ws$$
+#rm -rf runepub-ws$$
 
 if [ "x$isbn" != x ]; then
-
-ln -s "$work.epub" "$isbn.epub"
+  ln -s "$work.epub" "$isbn.epub" || true
+fi

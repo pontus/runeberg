@@ -2,12 +2,20 @@
 
 set -e
 
+headskip=3
+footskip=2
+filenamelen=4
+
 work="$1"
 
 runebergid="http://runeberg.org/$work/"
 
 rm -rf runepub-ws*
 mkdir -p runepub-ws$$/work/META-INF
+
+
+
+
 pushd runepub-ws$$
 wget -O "$work.zip" "http://runeberg.org/download.pl?mode=txtzip&work=$work"
 unzip "$work".zip
@@ -31,6 +39,17 @@ for p in $authors; do
 done
 
 echo $authorname $titlename
+
+# Source any special configuration
+if [ -r "../special/$work.sh" ]; then
+  . "../special/$work.sh"
+fi
+
+# Fix up standard pages
+cp ../edition.html work/
+
+sed -e "s/%AUTHOR%/$authorname/g" -e "s/%TITLE%/$titlename/g" ../titletemplate.html > work/title.html
+
 
 
 # Set up some general stuff for the epub
@@ -74,11 +93,21 @@ EOF
 </docAuthor>
  
 <navMap>
+   <navPoint  id="title" playOrder="0">
+      <navLabel><text>Titelsida</text></navLabel>
+      <content src="title.html"/>
+    </navPoint>
+
+   <navPoint  id="edition" playOrder="1">
+      <navLabel><text>Om den här utgåvan</text></navLabel>
+      <content src="edition.html"/>
+    </navPoint>
 EOF
 
 
-
-
+if [ "x$isbn" != x ]; then
+  isbncode='<dc:identifier id="BookIdISBN" opf:scheme="ISBN">'"$isbn"'</dc:identifier>'
+fi
 
 cat ->work/book.opf <<EOF
 <?xml version="1.0"?>
@@ -89,9 +118,17 @@ cat ->work/book.opf <<EOF
    <dc:language>$language</dc:language>
    <dc:identifier id="BookId">$runebergid</dc:identifier>
    <dc:creator opf:role="aut">$authorname</dc:creator>
+   $isbncode
 </metadata>
 
 <manifest>
+   <item id="title"
+         href="title.html"
+         media-type="application/xhtml+xml"/>
+
+   <item id="edition"
+         href="edition.html"
+         media-type="application/xhtml+xml"/>
 EOF
 
 
@@ -120,12 +157,12 @@ egrep -v '(^#|^-)' Articles.lst | while read l; do
       rm -f "$htmlfile"
       echo "<h2>$chaptername</h2><p>" >>"$htmlfile"
       for p in $pages; do
-	  # Expand ranges, if needed. Assumes increasing ranges. Assume 4 digits in filenames for now.
-          curpages=`seq -f %04g "${p%-*}" "${p#*-}"`
+	  # Expand ranges, if needed. Assumes increasing ranges. Assume fixed number of digits in filenames for now.
+          curpages=`seq -f %0$filenameleng "${p%-*}" "${p#*-}"`
 
 	  for q in $curpages; do
 	      # TODO: Actually detect if we have headers/footers to remove instead of assuming so.
-	      cat Pages/$q.txt | tail -n +3 | head -n -2| recode $charset..utf8 | \
+	      cat Pages/$q.txt | tail -n +"$headskip" | head -n -"$footskip" | recode $charset..utf8 | \
 		  sed -e 's/<td r>/<td>/g' | \
 		  sed -e 's/<td [^>]* c>/<td>/g' | \
 		  sed -e 's,^\s*$,</p><p>,' >>"$htmlfile"
@@ -189,9 +226,13 @@ EOF
 
 cd work
 
-rm -f ../../$work.epub
-zip -X -9 ../../$work.epub mimetype
-zip -X -9 -u -r ../../$work.epub *
+rm -f "../../$work.epub"
+zip -X -9 "../../$work.epub" mimetype
+zip -X -9 -u -r "../../$work.epub" *
 
 popd
 rm -rf runepub-ws$$
+
+if [ "x$isbn" != x ]; then
+
+ln -s "$work.epub" "$isbn.epub"

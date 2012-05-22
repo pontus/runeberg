@@ -163,13 +163,13 @@ egrep -v '(^#|^-)' Articles.lst | while read l; do
 
 	  for q in $curpages; do
 	      # TODO: Actually detect if we have headers/footers to remove instead of assuming so.
-	      cat Pages/$q.txt | tail -n +"$headskip" | head -n -"$footskip" | recode $charset..utf8 | \
-		  sed -e 's/<td r>/<td>/g' | \
-		  sed -e 's/<td [^>]* c>/<td>/g' | \
-		  sed -e 's,^\s*$,</p><p>,' >>"$htmlfile"
+	      cat Pages/$q.txt | tail -n +"$headskip" | head -n -"$footskip" | recode $charset..utf8 | ../textwash.sh >>"$htmlfile"
 	  done
       done
       echo '</p>' >> "$htmlfile"
+    else
+      mv "$htmlfile" "$htmlfile.orig"
+      ../htmlwash.sh < "$htmlfile.orig" > "$htmlfile"
     fi      
 
     num=$((num+1))

@@ -245,3 +245,7 @@ popd
 if [ "x$isbn" != x ]; then
   ln -s "$work.epub" "$isbn.epub" || true
 fi
+
+if [ -r epubcheck.jar ]; then
+  java -jar epubcheck.jar "$work.epub"
+fi

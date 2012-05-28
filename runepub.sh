@@ -32,6 +32,8 @@ pushd runepub-ws$$
 wget -O "$work.zip" "http://runeberg.org/download.pl?mode=txtzip&work=$work"
 unzip "$work".zip
 
+chmod -R "u+w" *
+
 grep ^LICENSE: Metadata && echo License found in Metadata file, is this really free? && exit 1
 
 charset=l1

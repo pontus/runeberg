@@ -2,6 +2,7 @@
 
 set -e
 
+# Some sensible defaults
 headskip=3
 footskip=2
 filenamelen=4

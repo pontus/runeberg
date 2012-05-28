@@ -212,6 +212,12 @@ cat Articles.lst  | recode $charset..utf8 | egrep -v '(^#|^-|^\s*$)' | while rea
 
     num=$((num+1))
       tidy -w 0 --wrap-attributes=no -n -asxhtml -utf8 "$htmlfile"  | ../htmlwash.sh >"$htmlfile.tmp" || true
+
+      # Be explicit about utf-8
+      echo '4 s,<head>,<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />,
+wq'  | ed "$htmlfile.tmp" || true
+
+
       mv "$htmlfile.tmp" "work/chapter$num.html"
 
   

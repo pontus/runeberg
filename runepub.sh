@@ -239,6 +239,33 @@ EOF
 
 done
 
+# Now all chapters are handled.
+
+# Look for images and download them.
+
+image=0
+for p in `cat work/*html | grep '<img [^>]* *src="' | sed -e 's,.*src="\([^"]*\)".*,\1,ig' | fgrep -v http://` ; do
+    echo $p;
+    mkdir work/`dirname $p`
+    wget -O work/"$p" "http://www.runeberg.org/$p"
+
+    mimetype=`mimetype "work/$p" | sed -e 's/.*: *//'`
+    cat ->>work/book.opf <<EOF
+   <item id="image$image"
+         href="$p"
+         media-type="$mimetype"/>
+EOF
+
+    #echo "<itemref idref=\"image$image\" /> " >> work/imagerefs
+
+    image=$((image+1))
+done
+
+
+
+
+
+
 # Close index
 
     cat ->>work/book.ncx <<EOF

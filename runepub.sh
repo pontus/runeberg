@@ -277,6 +277,7 @@ EOF
 itemrefs=`cat work/itemrefs`
 rm -f work/itemrefs
 
+
 cat ->>work/book.opf <<EOF
 
    <item id="ncx"
@@ -287,6 +288,7 @@ cat ->>work/book.opf <<EOF
 <spine toc="ncx">
 $itemrefs
 </spine>
+
 </package>
 EOF
 

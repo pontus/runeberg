@@ -28,7 +28,7 @@ mkdir -p "$workdir"/work/META-INF
 
 
 
-pushd runepub-ws$$
+pushd "$workdir"
 wget -O "$work.zip" "http://runeberg.org/download.pl?mode=txtzip&work=$work"
 unzip "$work".zip
 

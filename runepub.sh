@@ -8,6 +8,15 @@ filenamelen=4
 
 work="$1"
 
+if [ "x$work" = x ]; then
+    echo Please specify work
+    exit 1
+fi
+
+if fgrep -q "$work:" isbn.txt; then
+  isbn=`fgrep "$work:" isbn.txt | sed -e 's/.*://' -e 's/-//g'`
+fi
+
 runebergid="http://runeberg.org/$work/"
 
 rm -rf runepub-ws*

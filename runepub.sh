@@ -176,18 +176,42 @@ cat Articles.lst  | recode $charset..utf8 | egrep -v '(^#|^-|^\s*$)' | while rea
           curpages=`seq -f %0${filenamelen}g "${p%-*}" "${p#*-}"`
 
 	  for q in $curpages; do
+	      echo "<!--Start of page $q, skipping $headskip lines in the beginning.-->" > "page.$$"
+	      tail -n "+$headskip" "Pages/$q.txt" > page.content.$$
+
+	      if head -1 page.content.$$ | grep -q '^[[:lower:]]'; then
+		  # Starts with lower letter, continuation of last paragraph
+		  echo '<!--Page continues paragraph from last page.-->' >> "page.$$"
+	      else
+		  echo '<!--Page starts with capital letter, inserting new paragraph--></p><p>' >> "page.$$"
+	      fi
+
 	      # TODO: Actually detect if we have headers/footers to remove instead of assuming so.
-	      cat Pages/$q.txt | tail -n +"$headskip" | head -n -"$footskip" | recode $charset..utf8 | ../textwash.sh >>"$htmlfile"
+	      cat "page.$$" "page.content.$$" | head -n -"$footskip" | recode $charset..utf8 | ../textwash.sh >>"$htmlfile"
+
+	      echo "<!--End of page $q, skipped $footskip lines at the end.-->" >>"$htmlfile"
+
 	  done
       done
+      # Close paragraph
       echo '</p>' >> "$htmlfile"
     else
+      if fgrep -q -i content-type "$htmlfile"; then
+	  : No need to do anything.
+      else
+	  htmlcharset=`curl -I -s "http://www.runeberg.org/$work/$htmlfile" | grep Content-Type | sed -n -e 's/.*charset=\([^ ]*\)\s.*/\1/p'`
+	  # Check with file if we have UTF-8 already.
+	  file "$htmlfile" | fgrep -q UTF-8 || recode "$htmlcharset"..utf8 "$htmlfile"
+      fi
+
+
+
       mv "$htmlfile" "$htmlfile.orig"
       ../htmlwash.sh < "$htmlfile.orig" > "$htmlfile"
     fi      
 
     num=$((num+1))
-      tidy -n -asxhtml -utf8 "$htmlfile"  >"$htmlfile.tmp" || true
+      tidy -w 0 --wrap-attributes=no -n -asxhtml -utf8 "$htmlfile"  | ../htmlwash.sh >"$htmlfile.tmp" || true
       mv "$htmlfile.tmp" "work/chapter$num.html"
 
   

@@ -49,7 +49,7 @@ year=`grep ^PUBLISHING_YEAR: Metadata | sed -e 's/.*: *//'`
 titlename=`grep ^TITLE: Metadata | sed -e 's/.*: *//'  | recode l1..utf8`
 
 for p in $authors; do
-  authorname="$authorname "`curl  http://runeberg.org/authors/$p.html | grep '<title>' | sed -e 's/<.*>//g' | recode l1..utf8`
+  authorname="$authorname "`curl  http://runeberg.org/authors/$p.html | grep '<title>' | sed -e 's/<[^>]*>//g' | recode l1..utf8`
 done
 
 echo $authorname $titlename

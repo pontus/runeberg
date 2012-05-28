@@ -157,9 +157,9 @@ num=1;
 
 # TODO: Handle things that aren't collections
 
-egrep -v '(^#|^-)' Articles.lst | while read l; do
+cat Articles.lst  | recode $charset..utf8 | egrep -v '(^#|^-|^\s*$)' | while read l; do
   htmlfile=`echo $l | sed -e 's/|.*//'`.html
-  chaptername=`echo $l | sed -e 's/.*|\([^|]*\)|.*/\1/' | recode $charset..utf8`
+  chaptername=`echo $l | sed -e 's/.*|\([^|]*\)|.*/\1/'`
   pages=`echo $l | sed -e 's/.*|//'`
   echo $htmlfile $chaptername $pages
   

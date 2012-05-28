@@ -18,9 +18,11 @@ if fgrep -q "$work:" isbn.txt; then
 fi
 
 runebergid="http://runeberg.org/$work/"
+workdir="runepub-ws-$work-$$"
 
-rm -rf runepub-ws*
-mkdir -p runepub-ws$$/work/META-INF
+
+rm -rf "$workdir"
+mkdir -p "$workdir"/work/META-INF
 
 
 
@@ -244,12 +246,13 @@ fi
 # Now, build the actual epub
 cd work
 
+
 rm -f "../../$work.epub"
 zip -X -9 "../../$work.epub" mimetype
 zip -X -9 -u -r "../../$work.epub" *
 
 popd
-#rm -rf runepub-ws$$
+#rm -rf "$workdir"
 
 if [ "x$isbn" != x ]; then
   ln -s "$work.epub" "$isbn.epub" || true

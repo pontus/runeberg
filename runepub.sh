@@ -62,7 +62,9 @@ fi
 # Fix up standard pages
 cp ../edition.html work/
 
-sed -e "s/%AUTHOR%/$authorname/g" -e "s/%TITLE%/$titlename/g" ../titletemplate.html > work/title.html
+runepubversion=`git log | grep Date: | head -1 | sed -e 's/[^ ]*: *//'`
+
+sed -e "s/%AUTHOR%/$authorname/g" -e "s/%TITLE%/$titlename/g" -e "s/%NOW%/$now/g" -e "s/%VERSION%/$runepubversion/g" ../titletemplate.html > work/title.html
 
 
 

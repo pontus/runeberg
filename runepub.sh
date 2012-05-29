@@ -63,6 +63,7 @@ fi
 cp ../edition.html work/
 
 runepubversion=`git log | grep Date: | head -1 | sed -e 's/[^ ]*: *//'`
+now=`date +%Y%m%d`
 
 sed -e "s/%AUTHOR%/$authorname/g" -e "s/%TITLE%/$titlename/g" -e "s/%NOW%/$now/g" -e "s/%VERSION%/$runepubversion/g" ../titletemplate.html > work/title.html
 

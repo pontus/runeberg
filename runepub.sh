@@ -187,7 +187,12 @@ cat Articles.lst  | recode $charset..utf8 | egrep -v '(^#|^-|^\s*$)' | while rea
 	      fi
 
 	      # TODO: Actually detect if we have headers/footers to remove instead of assuming so.
-	      cat "page.$$" "page.content.$$" | head -n -"$footskip" | recode $charset..utf8 | ../textwash.sh >>"$htmlfile"
+	      
+	      if [ "$footskip" -gt 0 ]; then
+		  cat "page.$$" "page.content.$$" | head -n -"$footskip" | recode $charset..utf8 | ../textwash.sh >>"$htmlfile"
+	      else
+		  cat "page.$$" "page.content.$$" | recode $charset..utf8 | ../textwash.sh >>"$htmlfile"
+	      fi
 
 	      echo "<!--End of page $q, skipped $footskip lines at the end.-->" >>"$htmlfile"
 

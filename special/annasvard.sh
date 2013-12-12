@@ -1,2 +1,2 @@
 isbn=9789175350004
-footskip=0
+footskip=2

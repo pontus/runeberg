@@ -7,7 +7,7 @@ sed -e 's/align="center"/style="text-align: center"/g' \
     -e 's,<sp>,<em>,ig' \
     -e 's,</sp>,</em>,ig'  \
     -e 's,<font[^>]*>\([^<]*\)</font>,<span style="text-size: 200%">\1</span>,ig' \
-    -e 's,<br />,<span style="clear: both" />,ig' \
+    -e 's,<br />,<span style="clear: both" >\&nbsp;</span>,ig' \
     -e 's,<blockquote>,<blockquote><div>,ig' \
     -e 's,</blockquote>,</div></blockquote>,ig' \
     -e 's, align="*right"*, style="float: right",ig' \
